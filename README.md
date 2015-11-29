@@ -2,7 +2,7 @@
 Mailer using multiple gmail accounts.  
 Installation : pip install -r requirements.txt
 
-Use  
+Usage:    
 Step 1: Turn on the Gmail API  (POC members can skip this step, just drop me a mail, I will send you the required file)
 
   1. Use this wizard(https://console.developers.google.com/flows/enableapi?apiid=gmail) to create or select a project in the Google Developers Console and automatically turn on the API. Click the Go to credentials button to continue.  

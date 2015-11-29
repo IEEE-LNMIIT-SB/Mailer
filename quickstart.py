@@ -1,3 +1,4 @@
+
 from __future__ import print_function
 import httplib2
 import os
@@ -14,7 +15,7 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-
+import openpyxl
 from apiclient import errors
 
 try:
@@ -25,11 +26,10 @@ except ImportError:
 
 SCOPES = 'https://www.googleapis.com/auth/gmail.send'
 CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Gmail API Python Quickstart'
-name=['Vish','Nar','wal','wajeet']
-email=['vishuquiz@gmail.com','vishuquiz@gmail.com','vishuquiz@gmail.com','vishuquiz@gmail.com']
-names=True
-subject = "Hello World Multiple test4"
+APPLICATION_NAME = 'Macbull Mailer'
+salutation="Respected Sir"
+limit=100
+subject = "Hello World Multiple test5"
 msg = "Hello Multiple Mail"
 
 def get_credentials(count):
@@ -87,35 +87,63 @@ def SendMessage(service, user_id, message):
     except errors.HttpError, error:
         print ('An error occurred: %s' % error)
 
-def DraftMessage(name,msg):
-    msg="Dear "+name+"\n"+msg
+def DraftMessage(salutation,name,msg):
+    msg=salutation+" "+name+"\n"+msg
     print (msg)
     return msg
 
+def readExcel(listpath):
+    email=[]
+    name=[]
+    wb = openpyxl.load_workbook(listpath)
+    sheetdata=wb.get_active_sheet()
+    if sheetdata.get_highest_column()==1:
+        name=False
+    else:
+        name=True
+
+    for i in range(1,sheetdata.get_highest_row(),1):
+        if name:
+            names.append(sheetdata.cell(row=i, column=1).value)
+            email.append(sheetdata.cell(row=i, column=2).value)  
+        else:
+            email.append(sheetdata.cell(row=i, column=1).value)  
+
+    return name,names,email
+                
 def main():
     count=1
     i=0
     credentials=[]
     http=[]
     service=[]
+    quantity={}
+
+    name,names,email=readExcel(listpath)
     while i < count:
         credentials.append(get_credentials(i))
         http.append(credentials[i].authorize(httplib2.Http()))
         service.append(discovery.build('gmail', 'v1', http=http[i]))
+        quantity[i]=0
         i=i+1
-
     i=0
     while i < len(email):
         j=0
+        old_i=i
         while j < count:
-                if names:
-                    draft=DraftMessage(name[i],msg)
+            if quantity[j]<limit:
+                if name:
+                    draft=DraftMessage(salutation,names[i],msg)
                 else:
-                    draft=DraftMessage("Student",msg)
+                    draft=DraftMessage(salutation,"",msg)
                 message=CreateMessage("no-reply@plinth.com",email[i],subject,draft)
                 mes=SendMessage(service[j],'me',message)
+                quantity[j]+=1
                 i=i+1
-                j=j+1
+            j=j+1
+        if i==old_i:
+            print("Limit reached for all account")
+            print ("Last Email Sent to "+email[i])
 
 if __name__ == '__main__':
     main()

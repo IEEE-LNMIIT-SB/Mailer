@@ -1,5 +1,5 @@
-
 from __future__ import print_function
+from msg import msg,count,excel,subject,limit,salutation
 import httplib2
 import os
 
@@ -27,10 +27,6 @@ except ImportError:
 SCOPES = 'https://www.googleapis.com/auth/gmail.send'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Macbull Mailer'
-salutation="Respected Sir"
-limit=100
-subject = "Hello World Multiple test5"
-msg = "Hello Multiple Mail"
 
 def get_credentials(count):
     """Gets valid user credentials from storage.
@@ -94,20 +90,21 @@ def DraftMessage(salutation,name,msg):
 
 def readExcel(listpath):
     email=[]
-    name=[]
+    names=[]
     wb = openpyxl.load_workbook(listpath)
-    sheetdata=wb.get_active_sheet()
-    if sheetdata.get_highest_column()==1:
+    sheetdata=wb.active
+    if sheetdata.max_column==1:
         name=False
     else:
         name=True
-
-    for i in range(1,sheetdata.get_highest_row(),1):
+    for i in range(1,sheetdata.max_row+1,1):
+        print (i)
         if name:
             names.append(sheetdata.cell(row=i, column=1).value)
             email.append(sheetdata.cell(row=i, column=2).value)  
         else:
             email.append(sheetdata.cell(row=i, column=1).value)  
+        
 
     return name,names,email
                 
@@ -119,7 +116,9 @@ def main():
     service=[]
     quantity={}
 
-    name,names,email=readExcel(listpath)
+    name,names,email=readExcel(excel)
+    # name=False
+    # email=['vishuquiz@gmail.com']
     while i < count:
         credentials.append(get_credentials(i))
         http.append(credentials[i].authorize(httplib2.Http()))

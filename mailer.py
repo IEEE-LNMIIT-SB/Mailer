@@ -89,7 +89,6 @@ def readExcel(listpath):
     return name,names,email
                 
 def main():
-    count=1
     i=0
     credentials=[]
     http=[]

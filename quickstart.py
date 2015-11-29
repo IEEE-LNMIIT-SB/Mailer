@@ -1,22 +1,24 @@
 from __future__ import print_function
-from msg import msg,count,excel,subject,limit,salutation
-import httplib2
-import os
+
+__author__      = "Vishwajeet Narwal (Macbull)"
+__email__ = "vnarwal95@gmail.com"
+
 
 from apiclient import discovery
-import oauth2client
-from oauth2client import client
-from oauth2client import tools
-
-import base64
+from apiclient import errors
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
+from msg import msg,count,excel,subject,limit,salutation
+from oauth2client import client
+from oauth2client import tools
+import base64
+import httplib2
+import oauth2client
 import openpyxl
-from apiclient import errors
+import os
 
 try:
     import argparse
@@ -29,17 +31,8 @@ CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Macbull Mailer'
 
 def get_credentials(count):
-    """Gets valid user credentials from storage.
-
-    If nothing has been stored, or if the stored credentials are invalid,
-    the OAuth2 flow is completed to obtain the new credentials.
-
-    Returns:
-        Credentials, the obtained credential.
-    """
     home_dir = os.getcwd()
     credential_dir = os.path.join(home_dir, '.credentials')
-    print (credential_dir)
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
     credential_path = os.path.join(credential_dir,
@@ -58,17 +51,6 @@ def get_credentials(count):
     return credentials
 
 def CreateMessage(sender, to, subject, message_text):
-  """Create a message for an email.
-
-  Args:
-    sender: Email address of the sender.
-    to: Email address of the receiver.
-    subject: The subject of the email message.
-    message_text: The text of the email message.
-
-  Returns:
-    An object containing a base64url encoded email object.
-  """
   message = MIMEText(message_text)
   message['to'] = to
   message['from'] = sender
@@ -85,7 +67,6 @@ def SendMessage(service, user_id, message):
 
 def DraftMessage(salutation,name,msg):
     msg=salutation+" "+name+"\n"+msg
-    print (msg)
     return msg
 
 def readExcel(listpath):
@@ -98,7 +79,6 @@ def readExcel(listpath):
     else:
         name=True
     for i in range(1,sheetdata.max_row+1,1):
-        print (i)
         if name:
             names.append(sheetdata.cell(row=i, column=1).value)
             email.append(sheetdata.cell(row=i, column=2).value)  
@@ -117,8 +97,6 @@ def main():
     quantity={}
 
     name,names,email=readExcel(excel)
-    # name=False
-    # email=['vishuquiz@gmail.com']
     while i < count:
         credentials.append(get_credentials(i))
         http.append(credentials[i].authorize(httplib2.Http()))
@@ -137,6 +115,7 @@ def main():
                     draft=DraftMessage(salutation,"",msg)
                 message=CreateMessage("no-reply@plinth.com",email[i],subject,draft)
                 mes=SendMessage(service[j],'me',message)
+                print('Sent to ',email[i])
                 quantity[j]+=1
                 i=i+1
             j=j+1

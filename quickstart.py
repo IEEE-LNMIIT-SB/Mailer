@@ -26,7 +26,11 @@ except ImportError:
 SCOPES = 'https://www.googleapis.com/auth/gmail.send'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Gmail API Python Quickstart'
-
+name=['Vish','Nar','wal','wajeet']
+email=['vishuquiz@gmail.com','vishuquiz@gmail.com','vishuquiz@gmail.com','vishuquiz@gmail.com']
+names=True
+subject = "Hello World Multiple test4"
+msg = "Hello Multiple Mail"
 
 def get_credentials(count):
     """Gets valid user credentials from storage.
@@ -83,6 +87,11 @@ def SendMessage(service, user_id, message):
     except errors.HttpError, error:
         print ('An error occurred: %s' % error)
 
+def DraftMessage(name,msg):
+    msg="Dear "+name+"\n"+msg
+    print (msg)
+    return msg
+
 def main():
     count=1
     i=0
@@ -90,24 +99,23 @@ def main():
     http=[]
     service=[]
     while i < count:
-        print (i)
-        credentials = get_credentials(2)
-        http = credentials.authorize(httplib2.Http())
-        service = discovery.build('gmail', 'v1', http=http)
+        credentials.append(get_credentials(i))
+        http.append(credentials[i].authorize(httplib2.Http()))
+        service.append(discovery.build('gmail', 'v1', http=http[i]))
         i=i+1
 
-    message=CreateMessage("no-reply@plinth.com","vishuquiz@gmail.com","Hello World","Hello Mail")
-    mes=SendMessage(service,'me',message)
-    # results = service.users().labels().list(userId='me').execute()
-    # labels = results.get('labels', [])
-
-    # if not labels:
-        # print('No labels found.')
-    # else:
-      # print('Labels:')
-      # for label in labels:
-        # print(label['name'])
-
+    i=0
+    while i < len(email):
+        j=0
+        while j < count:
+                if names:
+                    draft=DraftMessage(name[i],msg)
+                else:
+                    draft=DraftMessage("Student",msg)
+                message=CreateMessage("no-reply@plinth.com",email[i],subject,draft)
+                mes=SendMessage(service[j],'me',message)
+                i=i+1
+                j=j+1
 
 if __name__ == '__main__':
     main()

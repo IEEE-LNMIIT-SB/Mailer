@@ -120,7 +120,8 @@ def main():
             j=j+1
         if i==old_i:
             print("Limit reached for all account")
-            print ("Last Email Sent to "+email[i])
+            print ("Last Email Sent to "+email[i-1])
+            break
 
 if __name__ == '__main__':
     main()
